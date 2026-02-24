@@ -2,7 +2,7 @@
 import secrets
 import string
 
-from app.models.user import User
+from app.models.users import User
 
 
 def get_user_by_id(session, user_id):
@@ -47,6 +47,7 @@ def create_user(
     equipment,
     workout_minutes_per_day,
     email=None,
+    cuisine=None,
 ):
     """Create a new user with a unique profile_code, save to DB, and return it."""
     user = User(
@@ -58,6 +59,7 @@ def create_user(
         weight_kg=weight_kg,
         goal=goal,
         dietary_preference=dietary_preference,
+        cuisine=(cuisine.strip() if cuisine and str(cuisine).strip() else None) or None,
         budget=float(budget),
         equipment=equipment,
         workout_minutes_per_day=int(workout_minutes_per_day),
@@ -66,4 +68,46 @@ def create_user(
     session.add(user)
     session.commit()
     session.refresh(user)  # so user.id is set
+    return user
+
+
+def update_user_preferences(
+    session,
+    user_id,
+    name,
+    age,
+    gender,
+    height_cm,
+    weight_kg,
+    goal,
+    dietary_preference,
+    budget,
+    equipment,
+    workout_minutes_per_day,
+    email=None,
+    cuisine=None,
+):
+    """
+    Update an existing user's core preferences (name, goal, body metrics, budget, equipment, email, cuisine).
+    Returns the updated User or None if not found.
+    """
+    user = get_user_by_id(session, user_id)
+    if not user:
+        return None
+
+    user.name = name
+    user.age = int(age)
+    user.gender = gender
+    user.height_cm = float(height_cm)
+    user.weight_kg = float(weight_kg)
+    user.goal = goal
+    user.dietary_preference = dietary_preference
+    user.cuisine = (cuisine.strip() if cuisine and str(cuisine).strip() else None) or None
+    user.budget = float(budget)
+    user.equipment = equipment
+    user.workout_minutes_per_day = int(workout_minutes_per_day)
+    user.email = email.strip() if email and str(email).strip() else None
+
+    session.commit()
+    session.refresh(user)
     return user
