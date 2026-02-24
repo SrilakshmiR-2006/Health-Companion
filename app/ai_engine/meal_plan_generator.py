@@ -125,7 +125,12 @@ def generate_and_save_meal_plan(session, user_id):
     calorie_target = metrics["calorie_target"]
     budget = float(getattr(user, "budget", 500) or 500)
     diet = (getattr(user, "dietary_preference", "Veg") or "Veg").strip().lower()
-    recipes = get_recipes_filtered(session, diet_type=diet)
+    cuisine_pref = (getattr(user, "cuisine", None) or "").strip() or None
+    if cuisine_pref and cuisine_pref.lower() == "any":
+        cuisine_pref = None
+    recipes = get_recipes_filtered(session, diet_type=diet, cuisine=cuisine_pref)
+    if not recipes:
+        recipes = get_recipes_filtered(session, diet_type=diet)
     if not recipes:
         recipes = get_all_recipes(session)
     # Pass recipes as context even if empty; LLM can still generate
