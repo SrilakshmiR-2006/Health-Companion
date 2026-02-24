@@ -1,5 +1,5 @@
 # Workout plan JSON shape (use in prompt):
-# { "days": [ { "day": 1, "exercises": [ { "exercise_id": 1, "name": "...", "instructions": "...", "duration_min": 10 } ] } ] }
+# { "days": [ { "day": 1, "exercises": [ { "exercise_id": 1, "name": "...", "instructions": "detailed 2-4 sentences...", "duration_min": 10 } ] } ] }
 
 import json
 from app.ai_engine.gemini_client import generate_text
@@ -29,7 +29,7 @@ def build_workout_plan_prompt(user, workouts, minutes_per_day, num_days=7):
     equipment = getattr(user, "equipment", "None") or "None"
     minutes = int(minutes_per_day or 30)
 
-    prompt = f"""You are a fitness assistant for students. Create a {num_days}-day workout plan.
+    prompt = f"""You are a fitness assistant for students. Create a {num_days}-day workout plan with DETAILED instructions for each exercise.
 
 USER: Goal={goal}, Equipment available={equipment}, Minutes per day={minutes}.
 
@@ -37,10 +37,11 @@ RULES:
 - Use ONLY the exercises listed below. Pick by ID.
 - Only use exercises where equipment_required matches "{equipment}" (or "None" if user has no equipment).
 - Total time per day should be about {minutes} minutes.
+- For EACH exercise you MUST provide a detailed "instructions" field: 2–4 full sentences that include (1) how to perform the exercise step-by-step, (2) key form or technique tips, (3) sets/reps or duration guidance if applicable, (4) one short safety or intensity note. Use the suggested_instructions from the EXERCISES context as a base but expand into clear, user-friendly detail. Do not output one-line instructions.
 - Output valid JSON only, no markdown. Shape:
-{{"days": [{{"day": 1, "exercises": [{{"exercise_id": 1, "name": "...", "instructions": "...", "duration_min": 10}}]}}]}}
+{{"days": [{{"day": 1, "exercises": [{{"exercise_id": 1, "name": "...", "instructions": "Warm up for 2 min. Do 3 sets of 12 reps with 60 sec rest. Keep core tight and back straight. Stop if you feel joint pain.", "duration_min": 10}}]}}]}}
 
-EXERCISES (use only these):
+EXERCISES (use only these; expand their suggested_instructions into full detail in your output):
 {workout_context}
 
 Output the JSON workout plan now:"""
