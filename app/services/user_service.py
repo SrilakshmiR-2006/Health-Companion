@@ -2,7 +2,7 @@
 import secrets
 import string
 
-from app.models.users import User
+from app.models.user import User
 
 
 def get_user_by_id(session, user_id):
