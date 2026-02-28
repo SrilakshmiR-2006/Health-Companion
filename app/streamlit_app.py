@@ -1,5 +1,8 @@
 """Health Companion – AI-powered meal and workout plans for students."""
 import sys
+import app.models
+from app.database import Base, engine
+Base.metadata.create_all(bind=engine) 
 from pathlib import Path
 
 # Ensure project root is on path so "app" is the package (avoids "app is not a package" when run from app/)

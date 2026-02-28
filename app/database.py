@@ -12,12 +12,6 @@ SessionLocal = sessionmaker(
 
 Base = declarative_base()
 
-# 👇 ADD THIS LINE
-from app.models import user, meal_plan, workout_plan, recipe, progress_log
-
-Base.metadata.create_all(bind=engine)
-
-
 def get_db():
     db = SessionLocal()
     try:
