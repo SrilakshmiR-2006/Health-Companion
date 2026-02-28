@@ -1,4 +1,4 @@
-"""Health Companion – AI-powered meal and workout plans for students."""
+"""Health Companion – AI-powered meal and workout plans"""
 import sys
 import app.models
 from app.database import Base, engine
